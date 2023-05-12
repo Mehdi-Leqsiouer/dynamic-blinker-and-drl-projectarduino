@@ -3,7 +3,7 @@
 Items for 1 headlight only :  
 
 10x bi-color led 6w (3w per color) yellow & white. With PCB.  
-1x shift register 74HC5955.  
+1x shift register 74HC595.  
 1x led driver DC 12v to 5V that supports PWM.  
 1x led driver DC 12v to 5V that doesnt support PWM.  
 1x Arduino uno or Nano.  
