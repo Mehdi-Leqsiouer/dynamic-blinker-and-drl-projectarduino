@@ -65,17 +65,21 @@ startAnimation();
 void loop() {
   buttonTurnSignal = digitalRead(pinTurnSignal);
 
+  // if turn signal is ON,turn off DRL and turn on turn signal
   if (buttonTurnSignal == HIGH)
   {
     digitalWrite(pwmPin, LOW);
     TurnOnTurnSignal();
   }
-  else { // Turn off the LEDs if buttonTurnSignal is not pressed
+  else { // Turn off the LEDs if buttonTurnSignal is not pressed and turn on back DRL
     TurnOffTurnSignal();
     TurnOnDRL();
   }
 }
 
+//function to turn on DRL
+//if position light or low_beam is active then we dim the brightness
+//else we turn on DRL full brightness
 void TurnOnDRL() {
   buttonLowBeam = digitalRead(pinLowBeam);
   buttonPosition = digitalRead(pinPosition);
@@ -88,6 +92,7 @@ void TurnOnDRL() {
   
 }
 
+//function to turn on yellow leds sequential. The last led is different because not connected to the shift register
 void TurnOnTurnSignal() {
   TurnOffTurnSignal();
   delay(tDelay);
@@ -107,16 +112,24 @@ void TurnOnTurnSignal() {
   delay(delayEndSignal);
 }
 
+//function to turn off the yellow leds
 void TurnOffTurnSignal() {
   leds = 0;
   digitalWrite(last_led, LOW);
   updateShiftRegister();
 }
 
+//function for starting animation when arduino is powered
 void startAnimation() {
   TurnOnTurnSignal();
   TurnOffTurnSignal();
-  int i = 0;
+  int i = 255;
+  while ( i > 0 ){
+    analogWrite( pwmPin, i );
+    delay( WAITTIME );
+    i = i - STEP;
+  }
+  i = 0;
   while ( i <= 255 ){
     analogWrite( pwmPin, i );
     delay( WAITTIME );
