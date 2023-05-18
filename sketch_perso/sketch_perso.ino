@@ -7,18 +7,20 @@ int pwmPin = 11;
 int pinLowBeam = 4;
 int pinPosition = 3;
 int pinTurnSignal = 9;
-int latchPin = 12;      // (11) ST_CP [RCK] on 74HC595
-int clockPin = 8;      // (9) SH_CP [SCK] on 74HC595
-int dataPin = 13;     // (12) DS [S1] on 74HC595
+//int pinDRL = 7;
+int latchPin = 12;      // (12) ST_CP [RCK] on 74HC595
+int clockPin = 8;      // (8) SH_CP [SCK] on 74HC595
+int dataPin = 13;     // (13) DS [S1] on 74HC595
 int last_led = 2;
 
 
-//variable for pin state
+//variable for input pin state
 int buttonLowBeam = 0;
 int buttonPosition = 0;
 int buttonTurnSignal = 0;
+//int buttonDRL = 0;
 
-//delay to adjust in the cars
+//delay of blinker to adjust in the cars
 int delayStart = 100;
 int tDelay = 70;
 int delayEndSignal = 350;
@@ -50,6 +52,7 @@ void setup()
 pinMode(pwmPin, OUTPUT);
 pinMode(pinLowBeam, INPUT);
 pinMode(pinTurnSignal, INPUT);
+//pinMode(pinDRL, INPUT);
 pinMode(latchPin, OUTPUT);
 pinMode(dataPin, OUTPUT);  
 pinMode(clockPin, OUTPUT);
@@ -113,12 +116,10 @@ void TurnOffTurnSignal() {
 void startAnimation() {
   TurnOnTurnSignal();
   TurnOffTurnSignal();
-  int i;
-
-    i = 0;
-    while ( i <= 255 ){
-      analogWrite( pwmPin, i );
-      delay( WAITTIME );
-      i = i + STEP;
-    }
+  int i = 0;
+  while ( i <= 255 ){
+    analogWrite( pwmPin, i );
+    delay( WAITTIME );
+    i = i + STEP;
+  }
 }
