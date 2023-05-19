@@ -39,6 +39,10 @@ const int STEP = 2;
 //byte leds for shifter register
 byte leds = 0;
 
+//state of turn signal and DRL to avoid overriding state (low or high)
+bool state_drl = true;
+bool state_turnsignal = false;
+
 void updateShiftRegister()
 {
    digitalWrite(latchPin, LOW);
@@ -68,12 +72,22 @@ void loop() {
   // if turn signal is ON,turn off DRL and turn on turn signal
   if (buttonTurnSignal == HIGH)
   {
-    digitalWrite(pwmPin, LOW);
+    if (state_drl) {
+      digitalWrite(pwmPin, LOW);
+      state_drl = false;
+    }
+    
     TurnOnTurnSignal();
+    state_turnsignal = true;
   }
   else { // Turn off the LEDs if buttonTurnSignal is not pressed and turn on back DRL
-    TurnOffTurnSignal();
-    TurnOnDRL();
+    if (state_turnsignal) {
+      TurnOffTurnSignal();
+      state_turnsignal = false;
+    }
+    if (!state_drl) {
+      TurnOnDRL();
+    }
   }
 }
 
@@ -89,6 +103,7 @@ void TurnOnDRL() {
   else {
     analogWrite(pwmPin, full_brightness);
   }
+  state_drl = true;
   
 }
 
