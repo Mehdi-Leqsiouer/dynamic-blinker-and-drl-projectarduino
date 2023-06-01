@@ -42,6 +42,7 @@ byte leds = 0;
 //state of turn signal and DRL to avoid overriding state (low or high)
 bool state_drl = true;
 bool state_turnsignal = false;
+bool state_drl_low = false;
 
 void updateShiftRegister()
 {
@@ -72,9 +73,10 @@ void loop() {
   // if turn signal is ON,turn off DRL and turn on turn signal
   if (buttonTurnSignal == HIGH)
   {
-    if (state_drl) {
+    if (state_drl || state_drl_low) {
       digitalWrite(pwmPin, LOW);
       state_drl = false;
+      state_drl_low = false;
     }
     
     TurnOnTurnSignal();
@@ -85,7 +87,7 @@ void loop() {
       TurnOffTurnSignal();
       state_turnsignal = false;
     }
-    if (!state_drl) {
+    if (!state_drl || !state_drl_low)  {
       TurnOnDRL();
     }
   }
@@ -97,13 +99,18 @@ void loop() {
 void TurnOnDRL() {
   buttonLowBeam = digitalRead(pinLowBeam);
   buttonPosition = digitalRead(pinPosition);
-  if (buttonLowBeam == HIGH || buttonPosition == HIGH) {
+  if ((buttonLowBeam == HIGH || buttonPosition == HIGH) && (!state_drl_low)) {
     analogWrite(pwmPin, brightness_lower);
+    state_drl_low = true;
+    state_drl = false;
   }
-  else {
-    analogWrite(pwmPin, full_brightness);
+  else if (buttonLowBeam == LOW && buttonPosition == LOW) {
+    if (!state_drl) {
+      analogWrite(pwmPin, full_brightness);
+      state_drl = true;
+      state_drl_low = false;
+    }
   }
-  state_drl = true;
   
 }
 
